@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: bitnami/zookeeper:3
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - kafka-net
+
+  kafka:
+    image: bitnami/kafka:2.8.0
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-net
+
+  kafka-batch-processor:
+    build: .
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    volumes:
+      - "D:/multlines/output:/app/input" # Montar diretório local no contêiner
+
+  akhq:
+    image: tchiotludo/akhq:latest
+    ports:
+      - "8085:8080"  # Mapeando a porta 8080 interna para 8085 externa
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          server:
+            access-log: false
+            base-path: /
+            port: 8080  # Porta interna configurada para 8080
+          security:
+            basic-auth:
+              - username: admin
+                password: admin
+                groups: [admin]
+          connections:
+            kafka:
+              properties:
+                bootstrap.servers: "kafka:9092"
+    networks:
+      - kafka-net
+
+networks:
+  kafka-net:
+    driver: bridge
