@@ -23,6 +23,7 @@ import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.PassThroughLineMapper;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
 @EnableBatchProcessing
@@ -30,16 +31,20 @@ public class BatchConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(BatchConfig.class);
 
+    @Autowired
+    public JobCompletionNotificationListener listener;
+
     @Bean
     public Job job(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
         Step step = stepBuilderFactory.get("file-to-kafka-step")
-                .<String, String>chunk(100)
+                .<String, String>chunk(1000)
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
                 .build();
 
         return jobBuilderFactory.get("file-to-kafka-job")
+                .listener(listener)
                 .start(step)
                 .build();
     }

@@ -27,9 +27,9 @@ public class KafkaItemWriter implements ItemWriter<String> {
 
     @Override
     public void write(List<? extends String> items) throws Exception {
-        long startTime = System.currentTimeMillis();
+/*        long startTime = System.currentTimeMillis();
         logger.info("Starting to write chunk at {}", startTime);
-        logger.info("Items to write: {}", items.size());
+        logger.info("Items to write: {}", items.size());*/
 
         for (String item : items) {
             //logger.info("Writing item to Kafka: {}", item);
@@ -41,8 +41,8 @@ public class KafkaItemWriter implements ItemWriter<String> {
             });
         }
 
-        long endTime = System.currentTimeMillis();
+        /*long endTime = System.currentTimeMillis();
         logger.info("Finished writing chunk at {}", endTime);
-        logger.info("Chunk processing time: {} ms", (endTime - startTime));
+        logger.info("Chunk processing time: {} ms", (endTime - startTime));*/
     }
 }
