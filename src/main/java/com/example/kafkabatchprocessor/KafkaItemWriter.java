@@ -1,10 +1,11 @@
-package com.example.kafkabatchprocessor;
+package com.santander.kafkabatchprocessor;
 
 import io.vertx.core.Vertx;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 
 import java.util.HashMap;
@@ -19,20 +20,15 @@ public class KafkaItemWriter implements ItemWriter<String> {
     public KafkaItemWriter() {
         Vertx vertx = Vertx.vertx();
         Map<String, String> config = new HashMap<>();
-        config.put("bootstrap.servers", "kafka:9092");
+        config.put("bootstrap.servers", "localhost:9092");
         config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producer = KafkaProducer.create(vertx, config);
     }
 
     @Override
-    public void write(List<? extends String> items) throws Exception {
-/*        long startTime = System.currentTimeMillis();
-        logger.info("Starting to write chunk at {}", startTime);
-        logger.info("Items to write: {}", items.size());*/
-
-        for (String item : items) {
-            //logger.info("Writing item to Kafka: {}", item);
+    public void write(Chunk<? extends String> chunk) throws Exception {
+        for (String item : chunk.getItems()) {
             KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("your_topic", item);
             producer.send(record, result -> {
                 if (result.failed()) {
@@ -40,9 +36,5 @@ public class KafkaItemWriter implements ItemWriter<String> {
                 }
             });
         }
-
-        /*long endTime = System.currentTimeMillis();
-        logger.info("Finished writing chunk at {}", endTime);
-        logger.info("Chunk processing time: {} ms", (endTime - startTime));*/
     }
 }
