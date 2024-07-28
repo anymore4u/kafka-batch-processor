@@ -1,4 +1,4 @@
-package com.example.kafkabatchprocessor;
+package com.santander.kafkabatchprocessor;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -11,19 +11,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-	@Autowired
-	private JobLauncher jobLauncher;
+    @Autowired
+    private JobLauncher jobLauncher;
 
-	@Autowired
-	private Job job;
+    @Autowired
+    private Job job;
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		jobLauncher.run(job, new JobParametersBuilder()
-				.addLong("startAt", System.currentTimeMillis()).toJobParameters());
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        jobLauncher.run(job, new JobParametersBuilder()
+                .addLong("startAt", System.currentTimeMillis()).toJobParameters());
+    }
 }
