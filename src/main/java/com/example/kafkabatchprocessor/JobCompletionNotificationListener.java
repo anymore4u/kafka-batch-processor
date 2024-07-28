@@ -1,4 +1,4 @@
-package com.example.kafkabatchprocessor;
+package com.santander.kafkabatchprocessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // adicionar lógica antes do início do job se necessário
+        logger.info("Job started with status: " + jobExecution.getStatus());
     }
 
     @Override
@@ -23,7 +23,6 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
         } else {
             logger.info("Job completed successfully with status: " + jobExecution.getStatus());
         }
-        // Fechar a aplicação após a conclusão do job
         System.exit(0);
     }
 }
